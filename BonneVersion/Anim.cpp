@@ -1,0 +1,63 @@
+#include "Anim.hpp"
+#include "MyGame.hpp"
+
+Anim::Anim(void)
+{
+}
+
+void Anim::initialize()
+{
+  this->model_ = gdl::Model::load("./libgdl_gl-2012.4/assets/marvin.fbx");
+  this->bomb_ = gdl::Model::load("./libgdl_gl-2012.4/assets/bomb.fbx");
+}
+
+Anim::~Anim(void)
+{
+}
+
+void Anim::update(gdl::GameClock const & gameClock, gdl::Input &)
+{
+  this->bomb_.cut_animation(this->bomb_, "Take 001", 0, 30, "RUN");
+  this->model_.cut_animation(this->model_, "Take 001", 35, 53, "RUN"); 
+  this->model_.cut_animation(this->model_, "Take 001", 0, 0, "IDLE");
+  this->model_.update(gameClock);
+  this->model_.play("IDLE", gdl::Anim::RUN);
+}
+
+void Anim::setColor(int color)
+{
+  this->color_ = gdl::Color(color/256/256, color/256, color, 0);
+  this->colori_ = color;
+}
+
+int Anim::getColor(void) const
+{
+  return this->colori_;
+}
+
+void Anim::draw(void)
+{
+  rotation_.x = 1.0f;
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  glPushMatrix();
+  glTranslatef((position_.x * 50.0f) - 800.0, (position_.y * -50.0f) - 0.0, -200.0f); 
+  glRotatef(270, 1.0f, 0.0f, 0.0f);
+  glRotatef(180, rotation_.x, rotation_.y, rotation_.z);
+  glScalef(0.15, 0.15, 0.15);
+  this->model_.set_default_model_color(this->color_);
+  this->model_.draw();
+  glPopMatrix();
+}
+
+void Anim::drawmBomb(float x, float y)
+{
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  glPushMatrix();
+  glTranslatef((x * 50.0f) - 800.0, (y * -50.0f) - 0.0, -200.0f); 
+  glRotatef(90, 1.0f, 0.0f, 0.0f);
+  glScalef(0.2, 0.2, 0.2);
+  this->bomb_.draw();
+  glPopMatrix();
+}

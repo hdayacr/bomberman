@@ -1,0 +1,21 @@
+#ifndef	POS_HPP__
+# define POS_HPP__
+
+# include <iostream>
+
+typedef struct s_pos
+{
+  int	x;
+  int	y;
+}		t_pos;
+
+typedef struct tB
+{
+  int		x;
+  int		y;
+  std::string	player;
+}		tBomb;
+
+
+
+#endif

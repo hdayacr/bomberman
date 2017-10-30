@@ -1,0 +1,24 @@
+
+#include	"Audio.hpp"
+
+Audio::Audio()
+{
+  this->buffer.LoadFromFile("../sound/bomb.wav");
+  this->music.OpenFromFile("../sound/story.ogg");
+}
+
+Audio::~Audio()
+{
+
+}
+
+void	Audio::startMusicSound()
+{
+  this->music.Play();
+}
+
+void	Audio::startBombSound()
+{
+  this->sound.SetBuffer(this->buffer);
+  this->sound.Play();
+}

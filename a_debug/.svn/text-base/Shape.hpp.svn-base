@@ -1,0 +1,31 @@
+#ifndef SHAPE_HPP
+# define SHAPE_HPP
+
+# include "Aobject.hpp"
+# include "Image.hpp"
+
+# define LARGEUR 800
+# define HAUTEUR 800
+
+class Triangle : public AObject
+{
+public:
+  void initialize(void);
+  void update(gdl::GameClock const&, gdl::Input &);
+  void draw(void);
+  void	raff(float, float, float, float, float);
+};
+
+class Rectangle : public AObject
+{
+public:
+  void initialize(void);
+  void update(gdl::GameClock const&, gdl::Input &);
+  void draw();
+  void	raff(float, float, float, float, float, float, gdl::Image);
+  void floor(float, float, float, gdl::Image);
+  void wallpaper(gdl::Image);
+private:
+};
+
+#endif

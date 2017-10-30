@@ -1,0 +1,98 @@
+#include "Menu.hpp"
+#include "MyGame.hpp"
+
+Menu::Menu(void)
+{
+  this->posabsolue = 0;
+  this->go = false;
+  initStruct();
+  text_.initialize();
+}
+
+Menu::~Menu(void)
+{
+}
+
+std::string	Menu::getMap(void) const
+{
+  return (this->map);
+}
+
+bool	Menu::getGo(void) const
+{
+  return (this->go);
+}
+
+void	Menu::setGo(bool Go)
+{
+  this->go = Go;
+}
+
+void Menu::initStruct(void)
+{
+  tPos xy;
+  int	i = 0;
+  std::string t = "../map/map.txt";
+  std::ifstream argfile(t.c_str());
+  std::string	tmp = "";
+
+
+  system("ls ../map/ > ../map/map.txt");
+  while (std::getline(argfile, tmp))
+    {
+      if (tmp != "map.txt")
+	{
+	  this->name[i] = tmp;
+	  ++i;
+	}
+    }
+  this->max = i;
+  xy.x = 20;
+  xy.y = 40;
+  while (this->posabsolue != this->max)
+    {
+      this->pos[this->posabsolue].x = xy.x;
+      this->pos[this->posabsolue].y = xy.y;
+      xy.y += 20;
+      ++this->posabsolue;
+    }
+  this->posabsolue = 0;
+}
+
+void Menu::chooseMap(void)
+{
+  int	a = 0;
+  this->xpos = this->pos[this->posabsolue].x;
+  this->ypos = this->pos[this->posabsolue].y;
+  //  text_.write("-->", 20, this->xpos - 20, this->ypos);
+  // text_.write("Choix de la Map:", 20, 25, 10);
+  text_.write(50, 50, 10, 10);
+  for (int i = 0; i < this->max; ++i)
+    {
+      //  text_.write(this->name[i], 20, 25, 40 + a);
+      a += 20;
+    }
+  if ((((MyGame *)(this->ptr))->getInput_().isKeyDown(gdl::Keys::Up)) == true)
+    {
+      if (this->posabsolue - 1 < 0)
+	this->posabsolue = this->max - 1;
+      else    
+	--this->posabsolue;
+    }
+  if ((((MyGame *)(this->ptr))->getInput_().isKeyDown(gdl::Keys::Down)) == true)
+    {
+      if (this->posabsolue + 1 == this->max)
+	this->posabsolue = 0;
+      else
+	++this->posabsolue;
+    }
+  if ((((MyGame *)(this->ptr))->getInput_().isKeyDown(gdl::Keys::Return)) == true)
+    {
+      this->setGo(true);
+      this->map = "../map/" + this->name[this->posabsolue];
+      std::cout << this->name[this->posabsolue] << std::endl;
+    }
+  if ((((MyGame *)(this->ptr))->getInput_().isKeyDown(gdl::Keys::Escape)) == true)
+    exit(0);
+  usleep(50000);
+}

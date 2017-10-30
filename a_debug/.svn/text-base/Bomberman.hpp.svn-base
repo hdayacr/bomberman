@@ -1,0 +1,47 @@
+#ifndef BOMBERMAN_HPP__
+# define BOMBERMAN_HPP__
+
+# include <fstream>
+# include <iostream>
+# include <list>
+# include <map>
+# include "Character.hpp"
+# include "Error.hpp"
+# include "Menu.hpp"
+# include "Pos.hpp"
+
+typedef enum 
+  {
+    PLAYER1 = 1,
+    PLAYER2 = 2,
+  }	nbPlayer;
+
+class Bomberman
+{
+public:
+  Bomberman();
+  virtual ~Bomberman();
+  void					addMapByFile(char const * const fileName);
+  void					stockPosInList(int, int);
+  void					stockPosInlistFakeWall(int, int);
+  void					demolitionWall(int, int);
+  void					affichPosMur(void) const;
+  bool					checkwall(int, int);
+  bool					checkTrueWall(int, int);
+  bool					checkBomb(int, int);
+  void					death(int, int);
+  void					addExplo(int, int);
+  void					createPlayer(int, int, std::string &, nbPlayer, int);
+  int					getXMap(void) const;
+  int					getYMap(void) const;
+  std::map<nbPlayer, Character*>	getlistPlayer() const;
+  Menu					menu;
+protected:
+  std::map<nbPlayer, Character*>	listPlayer;
+  std::list<t_pos>			listMur;
+  std::list<t_pos>			listFakeWall;
+  int					xMap;
+  int					yMap;
+};
+
+#endif

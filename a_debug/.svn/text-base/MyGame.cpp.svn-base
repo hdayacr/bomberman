@@ -1,0 +1,260 @@
+#include "MyGame.hpp"
+#include "Touch.hpp"
+
+void	MyGame::initialize(void)
+{
+  window_.setTitle("Bomberman");
+  window_.setWidth(800);
+  window_.setHeight(800);
+  window_.create();
+  camera_.initialize();
+  window_.display();
+  clock_.play();
+  std::list<AObject*>::iterator itb = this->objects_.begin();
+  for (; itb != this->objects_.end(); ++itb)
+    (*itb)->initialize();
+
+  this->exp = 0;
+  this->listTouch.push_back(gdl::Keys::Escape);
+  this->listTouch.push_back(gdl::Keys::Up);
+  this->listTouch.push_back(gdl::Keys::Down);
+  this->listTouch.push_back(gdl::Keys::Left);
+  this->listTouch.push_back(gdl::Keys::Right);
+  this->listTouch.push_back(gdl::Keys::RShift);
+  this->listTouch.push_back(gdl::Keys::Z);
+  this->listTouch.push_back(gdl::Keys::S);
+  this->listTouch.push_back(gdl::Keys::Q);
+  this->listTouch.push_back(gdl::Keys::D);
+  this->listTouch.push_back(gdl::Keys::Space);
+  this->listTouch.push_back(gdl::Keys::Back);
+  this->listTouch.push_back(gdl::Keys::P);
+
+  this->cosplay.game = this;
+  this->menu.ptr = this;
+  Touch *tmp = new Touch;
+
+  this->touch = tmp;
+  cosplay.initialize();
+
+  this->wall_ = gdl::Image::load("../image/wall2.jpg");      
+  this->fake_ = gdl::Image::load("../image/fis.jpg");        
+  this->fire_ = gdl::Image::load("../image/feu003.jpg");     
+  this->bomb_ = gdl::Image::load("../image/bomb.jpg"); 
+  this->wallpaper_ = gdl::Image::load("../image/bomberman2.jpg");
+  this->contour_ = gdl::Image::load("../image/grass.jpg");
+  this->floor_ = gdl::Image::load("../image/floor.jpg");
+}
+
+pthread_t	MyGame::getPthread() const
+{
+  return this->th;
+}
+
+int		MyGame::getxTmp() const
+{
+  return this->xTmp;
+}
+
+int		MyGame::getyTmp() const
+{
+  return this->yTmp;
+}
+
+int		MyGame::getPlayer()
+{
+  return this->player;
+}
+
+Audio&		MyGame::getAudio()
+{
+  return this->audio;
+}
+
+void		MyGame::setxTmp(int x)
+{
+  this->xTmp = x;
+}
+void		MyGame::setyTmp(int y)
+{
+  this->yTmp = y;
+}
+
+void		MyGame::setExp(int exp)
+{
+  this->exp = exp;
+}
+
+void		MyGame::setPlayer(int player)
+{
+  this->player = player;
+}
+
+void MyGame::update(void)
+{
+  if (menu.getGo() == true)
+    {
+      std::list<AObject*>::iterator itb = this->objects_.begin();
+      for (; itb != this->objects_.end(); ++itb)
+	(*itb)->update(gameClock_, input_);
+      for (int i = PLAYER1; this->listPlayer[(nbPlayer)i] != NULL; ++i)
+	this->listPlayer[(nbPlayer)i]->marvin.update(gameClock_, input_);
+      camera_.update(gameClock_, input_);
+      for (std::list<gdl::Keys::Key>::const_iterator it = this->listTouch.begin(); it != this->listTouch.end(); it++)
+	if (input_.isKeyDown((*it)) == true)
+	  ((Touch *)(this->touch))->catchTouch((*it), this);
+      clock_.update();
+    }
+}
+
+gdl::Input	MyGame::getInput_(void)
+{
+  return (input_);
+}
+
+void	MyGame::drawContour(void)
+{
+  int	x = -1, y = -1;
+
+  for (; y <= this->yMap;++y)
+    {
+      rectangle_.raff(((x) * 50.0f) - 800.0, ((y) * -50.0f) - 0.0, -200.0f, 50.0f, 50.0f, 0x58767e, this->contour_);
+      rectangle_.raff(((x + this->xMap + 1) * 50.0f) - 800.0, ((y) * -50.0f) - 0.0, -200.0f, 50.0f, 50.0f, 0x58767e, this->contour_);
+    }
+
+  y = -1;
+  for (; x <= this->xMap; ++x)
+    {
+      rectangle_.raff(((x) * 50.0f) - 800.0, ((y) * -50.0f) - 0.0, -200.0f, 50.0f, 50.0f, 0x58767e, this->contour_);
+      rectangle_.raff(((x) * 50.0f) - 800.0, ((y + this->yMap + 1) * -50.0f) - 0.0, -200.0f, 50.0f, 50.0f, 0x58767e, this->contour_);
+    }
+}
+
+void	MyGame::drawMur(void)
+{
+  for (std::list<t_pos>::const_iterator it = this->listMur.begin(); it != this->listMur.end(); it++)
+    rectangle_.raff((((*it).x) * 50.0f) - 800.0, (((*it).y) * -50.0f) - 0.0, -200.0f, 50.0f, 50.0f, 0x58767e, this->wall_);
+}
+
+void	MyGame::drawFloor(void)
+{
+  int	x = -1, y = -1;
+
+  for (; y < this->yMap -1; y++)
+    { 
+      for (;x < this->xMap - 1; x++)
+        {
+          rectangle_.floor(((x) * 50.0f) - 800.0, ((y) * -50.0f) - 0.0, -230.0f, this->floor_);
+        }
+      x = -1;
+    }
+}
+
+void	MyGame::drawFakeWall(void)
+{
+  for (std::list<t_pos>::const_iterator it = this->listFakeWall.begin(); it != this->listFakeWall.end(); it++)
+    rectangle_.raff((((*it).x) * 50.0f) - 800.0, (((*it).y) * -50.0f) - 0.0, -200.0f, 50.0f, 50.0f, 0x76511c, this->fake_);
+}
+
+void	MyGame::drawExplo(Bomb *t)
+{
+  std::list<tBomb>	tmp = t->getListExplo();
+  for (std::list<tBomb>::iterator it = tmp.begin(); it != tmp.end(); it++)
+    {
+      this->demolitionWall((*it).x, (*it).y);
+      this->death((*it).x, (*it).y);
+      rectangle_.raff((((*it).x) * 50.0f) - 800.0, (((*it).y) * -50.0f) - 0.0, -200.0f, 50.0f, 50.0f, 0xFFFC17, this->fire_);
+    }
+}
+
+void	MyGame::drawBomb(void)
+{
+  for (int i = PLAYER1; this->listPlayer[(nbPlayer)i] != NULL; ++i)
+    {
+      if (this->listPlayer[(nbPlayer)i]->getNbVies() > 0)
+	for (std::queue<Bomb *>	tmp = this->listPlayer[(nbPlayer)i]->getListBomb(); tmp.empty() != true; tmp.pop())
+	  {
+	    if (this->listPlayer[(nbPlayer)i]->getToken() == true)
+	      {
+		this->listPlayer[(nbPlayer)i]->setToken(false);
+		this->listPlayer[(nbPlayer)i]->eraseBomb();
+		if (this->listPlayer[(nbPlayer)i]->getNbBomb() == 0)
+		  this->listPlayer[(nbPlayer)i]->fillBomb();
+	      }
+	    else
+	      {
+		int	xLa = tmp.front()->getX();
+		int	yLa = tmp.front()->getY();
+
+	       	this->listPlayer[PLAYER1]->marvin.drawmBomb(xLa, yLa);	
+		this->drawExplo(tmp.front());
+	      }
+	  }
+    }
+}
+
+void	MyGame::drawPlayer(void)
+{
+  for (int i = PLAYER1; this->listPlayer[(nbPlayer)i] != NULL; ++i)
+    {
+      if (this->listPlayer[(nbPlayer)i]->getNbVies() > 0)
+	{
+	  int x = this->listPlayer[(nbPlayer)i]->getPosX();
+	  int y = this->listPlayer[(nbPlayer)i]->getPosY();
+	  (void)x;
+	  (void)y;
+	  this->listPlayer[(nbPlayer)i]->marvin.draw();
+	}
+    }
+}
+
+void MyGame::draw(void)
+{
+  std::string		a = "Raff";
+  std::string		b = "Loic";
+  int			nb = 0, nbPlay = 0;
+
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glClearColor(0.23f, 0.84f, 95.0f, 1.0f);
+  glClearDepth(1.0f);
+  std::list<AObject*>::iterator itb = this->objects_.begin();
+  for (; itb != this->objects_.end(); ++itb)
+    (*itb)->draw();
+  rectangle_.initialize();
+  if (this->menu.getGo() == true)
+    {
+      this->drawContour();
+      this->drawMur();
+      this->drawFakeWall();
+      this->drawBomb();
+      this->drawPlayer();
+      this->drawFloor();
+
+      for (int i = PLAYER1; this->listPlayer[(nbPlayer)i] != NULL; ++i)
+	{
+	  if (this->listPlayer[(nbPlayer)i]->getNbVies() <= 0)
+	    ++nb;
+	  ++nbPlay;
+	}
+      if (nb == nbPlay)
+	this->menu.setGo(false);
+    }
+  else
+    {
+      rectangle_.wallpaper(this->wallpaper_);
+      this->camera_.view(0, 0, 1000);
+      //      usleep(50000);
+      this->menu.chooseMap();
+      if (this->menu.getGo() == true)
+  	{
+	  this->camera_.view(0, -800, 1000);
+  	  this->addMapByFile(this->menu.getMap().c_str());
+  	  this->createPlayer(0, 0, a, PLAYER1, 0xFF00FF);
+  	  this->createPlayer(getXMap() - 1, getYMap() - 1, b, PLAYER2, 0x00FFFF);
+  	}
+    }
+  usleep(50000);
+}
+
+void MyGame::unload(void)
+{
+}

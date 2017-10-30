@@ -1,0 +1,41 @@
+#ifndef CLASSIQUE_HPP
+# define CLASSIQUE_HPP
+
+#include <map>
+#include "Textgame.hpp"
+#include "Pos.hpp"
+#include "Camera.hpp"
+#include "Textgame.hpp"
+
+# define NBXY 3
+
+class Classique
+{
+public:
+  Classique();
+  ~Classique();
+  void initStruct();
+  void isTouch();
+  void goLongueur();
+  void goLargeur();
+  void goPlay();
+  bool getGo()const;
+  void setGo(bool);
+  int getLongueur()const;
+  int getLargeur()const;
+  void *ptr;
+private:
+  bool go;
+  int posabsolue;
+  int xpos;
+  int ypos;
+  int largeur;
+  int longueur;
+  Textbomby text;
+  Camera camera_;
+  gdl::Color color;
+  std::map<int, t_pos> pos;
+  std::map<int, void (Classique::*)(void)>		choose;
+};
+
+#endif

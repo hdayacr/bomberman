@@ -1,0 +1,30 @@
+#ifndef BOMB_HPP__
+#define BOMB_HPP__
+
+# include <iostream>
+# include "Pos.hpp"
+# include <list>
+
+class Bomb
+{
+public:
+  Bomb();
+  ~Bomb();
+  std::list<tBomb>	getListExplo(void) const;
+  void			createExplo(void *);
+  int			getX(void) const;
+  int			getY(void) const;
+  void			setX(int);
+  void			setY(int);
+  void			setExpl(bool);
+  bool			getExpl(void) const;
+  bool			coordExp(int, int, bool, void *);
+private:
+  int			x;
+  int			y;
+  int			nbPlayer;
+  bool			expl;
+  std::list<tBomb>	listExplo;
+};
+
+#endif

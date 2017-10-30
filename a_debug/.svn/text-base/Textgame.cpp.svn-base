@@ -1,0 +1,59 @@
+#include "Textgame.hpp"
+#include <list>
+#include <iterator>
+#include <iostream>
+
+void Textbomby::initialize(void)
+{
+  this->alphabet = gdl::Image::load("../image/charset.png");
+}
+
+void Textbomby::update(void)
+{
+}
+
+void Textbomby::draw(void)
+{
+}
+
+void					Textbomby::write(int x, int y, int width, int height)
+{
+  double				osiX = 0.0;
+  double				osiY = 0.0;
+  //  int				i = 0;
+  double				taille = 1000.0f;
+
+  // while (i < 0)
+  //   {
+  //     osiX += 0.0;
+  //     ++i;
+  //   }
+
+  (void)width;
+  (void)height;
+  glPushMatrix();
+  alphabet.bind();
+  glBegin(GL_QUADS);
+
+  glTexCoord2f(0.0f + osiX, 0.0f + osiY);
+  glVertex3d(x, y, 0);
+  glTexCoord2f(0.0f + osiX, 1.0f + osiY);
+  glVertex3d(x, y-taille, 0);
+  glTexCoord2f(1.0f + osiX, 1.0f + osiY);
+  glVertex3d(x + taille, y-taille, 0);
+  glTexCoord2f(1.0f + osiX, 0.0f + osiY);
+  glVertex3d(x+taille, y, 0);
+
+  // glTexCoord2f(0.02f + osiX, 0.02f + osiY);
+  // glVertex3d(x, y, 0);
+  // glTexCoord2f(0.02f + osiX, 0.08f + osiY);
+  // glVertex3d(x, y-taille, 0);
+  // glTexCoord2f(0.041f + osiX, 0.08f + osiY);
+  // glVertex3d(x + taille, y-taille, 0);
+  // glTexCoord2f(0.041f + osiX, 0.02f + osiY);
+  // glVertex3d(x+taille, y, 0);
+
+
+  glEnd();
+  glPopMatrix();
+}

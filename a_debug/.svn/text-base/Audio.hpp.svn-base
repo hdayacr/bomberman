@@ -1,0 +1,20 @@
+
+#ifndef AUDIO
+# define AUDIO
+
+#include	<SFML/Audio.hpp>
+
+class Audio
+{
+public:
+  Audio();
+  ~Audio();
+  void			startBombSound();
+  void			startMusicSound();
+protected:
+  sf::SoundBuffer	buffer;
+  sf::Sound		sound;
+  sf::Music		music;
+};
+
+#endif

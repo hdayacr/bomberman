@@ -1,0 +1,38 @@
+
+NAME=	bomberman
+
+SRC=	Bomberman.cpp\
+	Character.cpp\
+	Camera.cpp\
+	Vector3f.cpp\
+	MyGame.cpp\
+	Shape.cpp\
+	main.cpp\
+	Touch.cpp\
+	Error.cpp\
+	Textgame.cpp\
+	Menu.cpp\
+	Anim.cpp\
+	Audio.cpp\
+	Bomb.cpp
+
+OBJ=	$(SRC:.cpp=.o)
+
+CPPFLAGS	+=	-W -Wall -Werror -Wextra
+CPPFLAGS	+=	-lgdl_gl -lGL -lGLU
+CPPFLAGS	+=	-I./../libgdl_gl-2012.4/include/
+CPPFLAGS	+=	-L./../libgdl_gl-2012.4/lib -Wl,--rpath=./../libgdl_gl-2012.4/lib
+CPPFLAGS	+=	-lsfml-system -lsfml-audio
+
+all:	$(NAME)
+
+$(NAME):	$(OBJ)
+	g++ -o $(NAME) $(OBJ) $(CPPFLAGS)
+
+clean:
+	rm -f $(OBJ)
+
+fclean:	clean
+	rm -f $(NAME)
+
+re:	fclean all

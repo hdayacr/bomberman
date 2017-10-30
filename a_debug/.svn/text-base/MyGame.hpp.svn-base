@@ -1,0 +1,78 @@
+#ifndef MYGAME_HPP
+# define MYGAME_HPP
+
+# include <Game.hpp>
+# include <Assert.hpp>
+# include <Clock.hpp>
+# include <Color.hpp>
+# include <GameClock.hpp>
+# include <Image.hpp>
+# include <Input.hpp>
+# include <Model.hpp>
+# include <Window.hpp>
+# include <cstdlib>
+# include <list>
+# include <GL/gl.h>
+# include <GL/glu.h>
+# include <iostream>
+# include "Shape.hpp"
+# include "Vector3f.hpp"
+# include "Camera.hpp"
+# include "Aobject.hpp"
+# include "Bomberman.hpp"
+# include "Bomb.hpp"
+# include <pthread.h>
+# include "Anim.hpp"
+# include "Audio.hpp"
+
+class MyGame : public gdl::Game, public Bomberman
+{
+public:
+  void				initialize(void);
+  void				update(void);
+  void				draw(void);
+  void				unload(void);
+  void				initText(void);
+  void				drawBomb(void);
+  void				drawExplo(Bomb *);
+  void				drawMur(void);
+  void				drawFakeWall(void);
+  void				drawPlayer(void);
+  pthread_t			getPthread() const;
+  int				getxTmp(void) const;
+  int				getyTmp(void) const;
+  int				getPlayer(void);
+  Audio&			getAudio();
+  void				setxTmp(int);
+  void				setyTmp(int);
+  void				setExp(int);
+  void				setPlayer(int);
+  gdl::Input			getInput_(void);
+  void				drawContour(void);
+  void				drawFloor(void);
+  gdl::Clock			clock_;
+protected:
+  int				player;
+  int				exp;
+  int				xTmp;
+  int				yTmp;
+  pthread_t			th;
+private:
+  Audio				audio;
+  Camera			camera_;
+  Triangle			triangle_;
+  Rectangle			rectangle_;
+  Anim				cosplay;
+  std::list<AObject*>		objects_;
+  std::list<gdl::Keys::Key>	listTouch;
+  void				*touch;
+  gdl::Image                    wall_;
+  gdl::Image                    fake_;
+  gdl::Image                    fire_;
+  gdl::Image                    bomb_;
+  gdl::Image			wallpaper_;
+  gdl::Image			contour_;
+  gdl::Image			floor_;
+};
+
+#endif

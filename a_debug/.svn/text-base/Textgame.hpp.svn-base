@@ -1,0 +1,23 @@
+#ifndef TEXTGAME_HPP
+# define TEXTGAME_HPP
+
+#include "Text.hpp"
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include "Image.hpp"
+
+
+class Textbomby
+{
+public:
+  void initialize(void);
+  void update(void);
+  void draw(void);
+  void write(int, int, int, int);
+private:
+  gdl::Text text_;
+  gdl::Image alphabet;
+};
+
+
+#endif

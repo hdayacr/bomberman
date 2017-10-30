@@ -1,0 +1,41 @@
+#ifndef MENU_HPP
+# define MENU_HPP
+
+#include <map>
+#include <iostream>
+#include <string>
+# include <fstream>
+#include "Textgame.hpp"
+
+# define NBOPTION 5
+
+typedef struct spos
+{
+  int	x;
+  int	y;
+}		tPos;
+
+class		Menu
+{
+public:
+  Menu();
+  ~Menu();
+  void				initStruct(void);
+  void				chooseMap(void);
+  bool				getGo(void) const;
+  void				setGo(bool);
+  std::string			getMap(void) const;
+  void				*ptr;
+private:
+  std::map<int, tPos>		pos;
+  std::map<int, std::string>	name;
+  int				xpos;
+  int				ypos;
+  int				posabsolue;
+  bool				go;
+  std::string			map;
+  Textbomby			text_;
+  int				max;
+};
+
+#endif // !MENU_HPP

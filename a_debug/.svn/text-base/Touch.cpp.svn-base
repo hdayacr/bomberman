@@ -1,0 +1,199 @@
+#include "Touch.hpp"
+
+# include "Anim.hpp"
+
+Touch::Touch()
+{
+  this->functionTouch[gdl::Keys::Escape] = &Touch::doEscape;
+  this->functionTouch[gdl::Keys::Back] = &Touch::doBack;
+  this->functionTouch[gdl::Keys::P] = &Touch::doPause;
+  // Joueur 1
+  this->functionTouch[gdl::Keys::Up] = &Touch::doUp;
+  this->functionTouch[gdl::Keys::Down] = &Touch::doDown;
+  this->functionTouch[gdl::Keys::Left] = &Touch::doLeft;
+  this->functionTouch[gdl::Keys::Right] = &Touch::doRight;
+  this->functionTouch[gdl::Keys::RShift] = &Touch::doRShift;
+  // Joueur 2
+  this->functionTouch[gdl::Keys::Z] = &Touch::doZup;
+  this->functionTouch[gdl::Keys::S] = &Touch::doSdown;
+  this->functionTouch[gdl::Keys::Q] = &Touch::doQleft;
+  this->functionTouch[gdl::Keys::D] = &Touch::doDright;
+  this->functionTouch[gdl::Keys::Space] = &Touch::doSpace;
+
+  this->i = PLAYER1;
+  this->j = PLAYER2;
+}
+
+Touch::~Touch()
+{
+
+}
+
+void	*retardBomb(void *i)
+{
+  MyGame	*tmp = (MyGame *)i;
+  int		xE = tmp->getxTmp(), yE = tmp->getyTmp();
+  int		nP = tmp->getPlayer();
+
+  (void)xE;
+  (void)yE;
+  std::cout << "Attention !!" << std::endl;
+  std::cout << "3" << std::endl;
+  sleep(1);
+  std::cout << "2" << std::endl;
+  sleep(1);
+  std::cout << "1" << std::endl;
+  sleep(1);
+  tmp->getAudio().startBombSound();
+  std::cout << "BOOOOOOM !!" << std::endl;
+  tmp->getlistPlayer()[(nbPlayer)nP]->addExplo();
+  sleep(1);
+  tmp->getlistPlayer()[(nbPlayer)nP]->setToken(true);
+  tmp->setExp(1);
+  pthread_exit(0);
+  return (NULL);
+}
+
+void		Touch::catchTouch(gdl::Keys::Key k, MyGame *t)
+{
+  if (this->functionTouch[k] != NULL)
+    (this->*(functionTouch[k]))(t);
+}
+
+void		Touch::doPause(MyGame *t)
+{
+  t->clock_.pause();
+}
+
+void		Touch::doEscape(MyGame *)
+{
+  exit(0);
+}
+
+void		Touch::doBack(MyGame *t)
+{
+  t->menu.setGo(false);
+  t->clock_.reset();
+}
+
+void		Touch::doUp(MyGame *t)
+{
+  if (t->checkwall(t->getlistPlayer()[i]->getPosX(), t->getlistPlayer()[i]->getPosY() - 1) == true)
+    {
+      t->getlistPlayer()[i]->setPosY((t->getlistPlayer()[i]->getPosY() - 1));
+      t->getlistPlayer()[i]->marvin.model_.play("RUN", gdl::Anim::RUN);
+      t->getlistPlayer()[i]->marvin.rotation_.z = 10;
+      t->getlistPlayer()[i]->marvin.position_.y -= 1;
+    }
+}
+
+void		Touch::doDown(MyGame *t)
+{
+  if (t->checkwall(t->getlistPlayer()[i]->getPosX(), t->getlistPlayer()[i]->getPosY() + 1) == true)
+    {
+      t->getlistPlayer()[i]->setPosY((t->getlistPlayer()[i]->getPosY() + 1));
+      t->getlistPlayer()[i]->marvin.model_.play("RUN", gdl::Anim::RUN);  
+      t->getlistPlayer()[i]->marvin.position_.y += 1;
+      t->getlistPlayer()[i]->marvin.rotation_.z = 0;
+    }
+}
+
+void		Touch::doLeft(MyGame *t)
+{
+  if (t->checkwall(t->getlistPlayer()[i]->getPosX() - 1, t->getlistPlayer()[i]->getPosY()) == true)
+    {
+      t->getlistPlayer()[i]->setPosX((t->getlistPlayer()[i]->getPosX() - 1));
+      t->getlistPlayer()[i]->marvin.model_.play("RUN", gdl::Anim::RUN);
+      t->getlistPlayer()[i]->marvin.position_.x -= 1;
+      t->getlistPlayer()[i]->marvin.rotation_.z = -1;
+    }
+}
+
+void		Touch::doRight(MyGame *t)
+{
+  if (t->checkwall(t->getlistPlayer()[i]->getPosX() + 1, t->getlistPlayer()[i]->getPosY()) == true)
+    {
+      t->getlistPlayer()[i]->setPosX((t->getlistPlayer()[i]->getPosX() + 1));
+       t->getlistPlayer()[i]->marvin.position_.x += 1;
+       t->getlistPlayer()[i]->marvin.rotation_.z = 1;
+       t->getlistPlayer()[i]->marvin.model_.play("RUN", gdl::Anim::RUN);
+    }
+}
+
+void		Touch::doRShift(MyGame *t)
+{
+  pthread_t	tmp = t->getPthread();
+
+  if (t->getlistPlayer()[i]->getNbVies() > 0)
+    if (t->getlistPlayer()[i]->getNbBomb() > 0)
+      {
+	t->setPlayer(i);
+	t->getlistPlayer()[i]->setNbBomb(t->getlistPlayer()[i]->getNbBomb() - 1);
+	t->getlistPlayer()[i]->addBomb(t->getlistPlayer()[i]->getPosX(), t->getlistPlayer()[i]->getPosY());
+	t->getlistPlayer()[i]->marvin.bomb_.play("RUN", gdl::Anim::RUN);
+	t->setxTmp(t->getlistPlayer()[i]->getPosX());
+	t->setyTmp(t->getlistPlayer()[i]->getPosY());
+	pthread_create(&tmp, NULL, retardBomb, t);
+      }
+}
+
+void		Touch::doZup(MyGame *t)
+{
+  if (t->checkwall(t->getlistPlayer()[j]->getPosX(), t->getlistPlayer()[j]->getPosY() - 1) == true)
+    {
+      t->getlistPlayer()[j]->setPosY((t->getlistPlayer()[j]->getPosY() - 1));
+      t->getlistPlayer()[j]->marvin.model_.play("RUN", gdl::Anim::RUN);
+      t->getlistPlayer()[j]->marvin.rotation_.z = 10;
+      t->getlistPlayer()[j]->marvin.position_.y -= 1;
+    }
+}
+
+void		Touch::doSdown(MyGame *t)
+{
+  if (t->checkwall(t->getlistPlayer()[j]->getPosX(), t->getlistPlayer()[j]->getPosY() + 1) == true)
+    {
+      t->getlistPlayer()[j]->setPosY((t->getlistPlayer()[j]->getPosY() + 1));
+      t->getlistPlayer()[j]->marvin.model_.play("RUN", gdl::Anim::RUN);  
+      t->getlistPlayer()[j]->marvin.position_.y += 1;
+      t->getlistPlayer()[j]->marvin.rotation_.z = 0;
+    }
+}
+
+void		Touch::doQleft(MyGame *t)
+{
+  if (t->checkwall(t->getlistPlayer()[j]->getPosX() - 1, t->getlistPlayer()[j]->getPosY()) == true)
+    {
+      t->getlistPlayer()[j]->setPosX((t->getlistPlayer()[j]->getPosX() - 1));
+      t->getlistPlayer()[j]->marvin.model_.play("RUN", gdl::Anim::RUN);
+      t->getlistPlayer()[j]->marvin.position_.x -= 1;
+      t->getlistPlayer()[j]->marvin.rotation_.z = -1;
+    }
+}
+
+void		Touch::doDright(MyGame *t)
+{
+  if (t->checkwall(t->getlistPlayer()[j]->getPosX() + 1, t->getlistPlayer()[j]->getPosY()) == true)
+    {
+      t->getlistPlayer()[j]->setPosX((t->getlistPlayer()[j]->getPosX() + 1));
+      t->getlistPlayer()[j]->marvin.model_.play("RUN", gdl::Anim::RUN);
+      t->getlistPlayer()[j]->marvin.position_.x += 1;
+      t->getlistPlayer()[j]->marvin.rotation_.z = 1;
+    }
+}
+
+void		Touch::doSpace(MyGame *t)
+{
+  pthread_t	tmp = t->getPthread();
+
+  if (t->getlistPlayer()[j]->getNbVies() > 0)
+    if (t->getlistPlayer()[j]->getNbBomb() > 0)
+      {
+	t->setPlayer(j);
+	t->getlistPlayer()[j]->setNbBomb(t->getlistPlayer()[j]->getNbBomb() - 1);
+	t->getlistPlayer()[j]->addBomb(t->getlistPlayer()[j]->getPosX(), t->getlistPlayer()[j]->getPosY());
+	t->setxTmp(t->getlistPlayer()[j]->getPosX());
+	t->setyTmp(t->getlistPlayer()[j]->getPosY());
+	pthread_create(&tmp, NULL, retardBomb, t);
+	t->getlistPlayer()[j]->marvin.bomb_.play("RUN", gdl::Anim::RUN);
+      }
+}

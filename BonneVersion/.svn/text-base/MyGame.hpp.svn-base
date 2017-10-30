@@ -1,0 +1,108 @@
+#ifndef MYGAME_HPP
+# define MYGAME_HPP
+
+# include <Game.hpp>
+# include <Assert.hpp>
+# include <Clock.hpp>
+# include <Color.hpp>
+# include <GameClock.hpp>
+# include <Image.hpp>
+# include <Input.hpp>
+# include <Model.hpp>
+# include <Window.hpp>
+# include <cstdlib>
+# include <list>
+# include <GL/gl.h>
+# include <GL/glu.h>
+# include <iostream>
+# include "Shape.hpp"
+# include "Vector3f.hpp"
+# include "Camera.hpp"
+# include "Aobject.hpp"
+# include "Bomberman.hpp"
+# include <pthread.h>
+# include "Anim.hpp"
+# include "Audio.hpp"
+
+class MyGame : public gdl::Game, public Bomberman
+{
+public:
+  void				initialize(void);
+  void				update(void);
+  void				draw(void);
+  void				unload(void);
+  void				initText(void);
+  void				drawBomb(void);
+  void				drawExplo(Bomb *);
+  void				drawMur(void);
+  void				drawFakeWall(void);
+  void				drawPlayer(void);
+  void				drawInfoPlayer(void);
+  void				drawBonus(void);
+  pthread_t			getPthread() const;
+  int				getPlayer(void) const;
+  Audio				&getAudio(void);
+  void				setPlayer(int);
+  gdl::Input			getInput_(void);
+  void				drawContour(void);
+  void				drawFloor(void);
+  bool				coordExp(int, int, bool, Bomb *);
+  void				updateExplo(Bomb *, int);
+  void				saveGame(void);
+  void				loadGame(void);
+  void				goSound();
+  bool				checkIntro();
+  void				checkGoLaunchGame();
+  void				toEnterInGame();
+  void				reStart();
+  bool				checkGoLaunch(bool);
+  void				checkGoForPerso();
+  void				doOption();
+  bool				checkGoOption(bool);
+  void				choiceInLaunchGame();
+  bool				checkPause();
+  void				doCredits();
+  bool				checkGoCredits(bool);
+  void				createBot(int);
+  void				catchBonus(int, int, int);
+  void				bonusVies(int);
+  void				bonusBomb(int);
+  void				bonusShoe(int);
+  void				bonusFlame(int);
+  void				cleanListPerso(void);
+  void				doClassique(void);
+  bool				checkGoClassique(bool);
+  pthread_mutex_t		m_prod;
+  std::string			pl1;
+  std::string			pl2;
+  bool				son;
+  bool				pauseGame;
+  modeGame			mode;
+protected:
+  int				player;
+  pthread_t			th;
+private:
+  Audio				audio;
+  Camera			camera_;
+  Triangle			triangle_;
+  Rectangle			rectangle_;
+  Hexagone			hexagone_;
+  Choice			choice;
+  OptionGame			optionGame;
+  DoCredit			docredit;
+  PGame				pgame;
+  std::list<AObject*>		objects_;
+  std::list<gdl::Keys::Key>	listTouch;
+  std::map<int, void (MyGame::*)(int)> funcBonus;
+  void				*touch;
+  gdl::Image                    wall_;
+  gdl::Image                    fake_;
+  gdl::Image                    fire_;
+  gdl::Image                    bomb_;
+  gdl::Image			wallpaper_;
+  gdl::Image			contour_;
+  gdl::Image			floor_;
+  gdl::Image			galaxie_;
+};
+
+#endif

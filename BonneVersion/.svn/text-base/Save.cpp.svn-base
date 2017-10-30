@@ -1,0 +1,90 @@
+# include "MyGame.hpp"
+# include <sstream>
+
+void	MyGame::loadGame(void)
+{
+  std::ifstream fichier("../save/save1.txt", std::ios::in);
+  std::string contenu;
+  int	x;
+  int	y;
+
+  if (fichier)
+    {
+      std::getline(fichier, contenu);
+
+      this->menu.map = contenu;
+      this->getAudio().stopMenuSound();
+      this->getAudio().startMusicSound();
+      this->camera_.view(0, -800, 1000);
+      this->addMapByFile(contenu.c_str());
+
+      for (int i = 1; i < 3; ++i)
+	{
+      	  std::string	Name;
+      	  int	color;
+      	  int	XMap;
+      	  int	YMap;
+	  int	Vie;
+
+      	  std::getline(fichier, Name);
+      	  std::getline(fichier, contenu);
+      	  std::istringstream col(contenu);
+      	  col >> color;
+      	  std::getline(fichier, contenu);
+      	  std::istringstream x(contenu);
+      	  x >> XMap;
+      	  std::getline(fichier, contenu);
+      	  std::istringstream y(contenu);
+      	  y >> YMap;
+      	  this->createPlayer(XMap, YMap, Name, i, color);
+      	  std::getline(fichier, contenu);
+      	  std::istringstream life(contenu);
+      	  life >> Vie;
+	  this->listPlayer[i]->setNbVies(Vie);
+      	  std::getline(fichier, contenu);
+	}
+      this->listFakeWall.clear();
+      while (std::getline(fichier, contenu, ';'))
+	{
+	  std::istringstream xx(contenu);
+	  xx >> x;
+	  std::getline(fichier, contenu, ';');
+	  std::istringstream yy(contenu);
+	  yy >> y;
+
+	  this->stockPosInlistFakeWall(x, y);
+	}
+      fichier.close();
+    }
+  else
+    {
+      std::cerr << "Impossible de charger le fichier !" << std::endl;
+      this->menu.setGo(true);
+    }
+}
+
+void	MyGame::saveGame(void)
+{
+  std::ofstream fichier("../save/save1.txt", std::ios::out | std::ios::trunc);  
+  if (fichier)
+    {
+      fichier << menu.getMap() << std::endl;
+      for (int i = 1; this->listPlayer[i] != NULL; ++i)
+	{
+	  fichier << this->listPlayer[i]->getName() << std::endl;
+	  fichier << this->listPlayer[i]->marvin.getColor() << std::endl;
+	  fichier << this->listPlayer[i]->getPosX() << std::endl; 
+	  fichier << this->listPlayer[i]->getPosY() << std::endl;
+	  fichier << this->listPlayer[i]->getNbVies() << std::endl;
+	  fichier << this->listPlayer[i]->getNBomb() << std::endl;
+	}
+      std::list<t_pos> Pos = this->listFakeWall;
+      for (std::list<t_pos>::iterator it = Pos.begin(); it != Pos.end(); it++)
+	fichier << (*it).x << ';' << (*it).y << ';';;
+      fichier << '\n';
+      fichier.close();
+      std::cout << "\nGame is save" << std::endl;
+    }
+  else
+    std::cerr << "Impossible de sauvegarder le fichier!" << std::endl;
+}

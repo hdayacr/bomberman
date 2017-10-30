@@ -1,0 +1,35 @@
+
+#ifndef TOUCH_HPP__
+# define TOUCH_HPP__
+
+# include "Input.hpp"
+# include "Bomberman.hpp"
+# include "MyGame.hpp"
+
+class Touch
+{
+public:
+  Touch();
+  virtual ~Touch();
+  void		catchTouch(gdl::Keys::Key, MyGame *);
+  void		doEscape(MyGame *);
+  void		doUp(MyGame *);
+  void		doDown(MyGame *);
+  void		doLeft(MyGame *);
+  void		doRight(MyGame *);
+  void		doRShift(MyGame *);
+  void		doZup(MyGame *);
+  void		doSdown(MyGame *);
+  void		doQleft(MyGame *);
+  void		doDright(MyGame *);
+  void		doSpace(MyGame *);
+  void		doBack(MyGame *);
+  void		doPause(MyGame *);
+private:
+  std::map<gdl::Keys::Key, void (Touch::*)(MyGame *)>	functionTouch;
+  nbPlayer		i;
+  nbPlayer	        j;
+};
+
+
+#endif // !TOUCH_HPP__
